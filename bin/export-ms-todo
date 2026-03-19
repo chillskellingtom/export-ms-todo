@@ -13,6 +13,8 @@ require_relative '../lib/export_ms_todo/task_repository'
 require_relative '../lib/export_ms_todo/config'
 require_relative '../lib/export_ms_todo/exporters/todoist_csv'
 require_relative '../lib/export_ms_todo/exporters/json'
+require_relative '../lib/export_ms_todo/importers/yaml'
+require_relative '../lib/export_ms_todo/task_importer'
 require_relative '../lib/export_ms_todo/progress_reporter'
 
 module ExportMsTodo
@@ -124,6 +126,66 @@ module ExportMsTodo
       say "\nNext steps:"
       say '1. Go to Todoist → Settings → Import'
       say '2. Upload CSV files (numbered files to same project)'
+    rescue AuthenticationError => e
+      say "\n✗ Authentication failed", :red
+      say "  #{e.message}"
+      say '  Get a new token: https://developer.microsoft.com/en-us/graph/graph-explorer'
+      exit 1
+    rescue RateLimitError => e
+      say "\n✗ Rate limit exceeded", :red
+      say "  #{e.message}"
+      exit 1
+    rescue StandardError => e
+      say "\n✗ Error: #{e.message}", :red
+      say e.backtrace.first(5).join("\n") if ENV['DEBUG']
+      exit 1
+    end
+
+    desc 'import', 'Import tasks from a YAML file into MS Todo'
+    option :input, aliases: '-i', required: true, desc: 'Path to YAML task file'
+    option :token, aliases: '-t', desc: 'MS Graph access token'
+    option :verbose, type: :boolean, default: false, desc: 'Show detailed progress'
+    def import
+      trap('SIGINT') do
+        say "\n\n❌ Import cancelled by user.", :red
+        exit 130
+      end
+
+      say '╭─────────────────────────────────────────╮', :blue
+      say '│  Import Tasks → MS Todo                │', :blue
+      say '╰─────────────────────────────────────────╯', :blue
+      say
+
+      # Parse input file
+      input_path = options[:input]
+      say "Reading #{input_path}..."
+      parser = Importers::Yaml.new(input_path)
+      task_lists = parser.parse
+
+      list_count = task_lists.size
+      task_count = task_lists.values.flatten.size
+      say "Found #{task_count} tasks across #{list_count} lists.\n\n"
+
+      # Auth
+      config = Config.new(overrides: { token: options[:token] })
+      token = config.token || prompt_for_token
+
+      reporter = ProgressReporter.new(verbose: options[:verbose], output: self)
+      client = GraphClient.new(token)
+
+      say '✓ Authenticated successfully', :green
+      say
+
+      # Import
+      importer = TaskImporter.new(client, reporter: reporter)
+      created = importer.import(task_lists)
+
+      say "\n✓ Import complete! #{created} tasks added.", :green
+
+      reporter.print_import_summary
+    rescue ValidationError => e
+      say "\n✗ Validation error: #{e.message}", :red
+      exit 1
     rescue AuthenticationError => e
       say "\n✗ Authentication failed", :red
       say "  #{e.message}"

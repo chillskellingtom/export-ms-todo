@@ -59,4 +59,34 @@ RSpec.describe ExportMsTodo::GraphClient do
       end
     end
   end
+
+  describe '#post', :vcr do
+    it 'performs a POST request with JSON body' do
+      stub_request(:post, /graph.microsoft.com/)
+        .to_return(status: 201, body: '{"id": "new-1"}')
+
+      response = client.post('/me/todo/lists', body: { displayName: 'Test' })
+      expect(response.code).to eq(201)
+    end
+
+    it 'raises AuthenticationError on 401' do
+      stub_request(:post, /graph.microsoft.com/)
+        .to_return(status: 401)
+
+      expect do
+        client.post('/me/todo/lists', body: { displayName: 'Test' })
+      end.to raise_error(ExportMsTodo::AuthenticationError)
+    end
+
+    it 'retries on 5xx errors' do
+      stub_request(:post, /graph.microsoft.com/)
+        .to_return(status: 500).then
+        .to_return(status: 201, body: '{"id": "new-1"}')
+
+      allow(client).to receive(:sleep)
+
+      expect { client.post('/me/todo/lists', body: {}) }.not_to raise_error
+      expect(client).to have_received(:sleep).once
+    end
+  end
 end

@@ -16,6 +16,12 @@ module ExportMsTodo
       @completed_skipped = 0
       @failed_count = 0
 
+      # Import metrics
+      @imported_count = 0
+      @import_total = 0
+      @import_list_count = 0
+      @mode = :export
+
       # Timing
       @start_time = nil
 
@@ -120,6 +126,61 @@ module ExportMsTodo
 
     def increment_failed(count = 1)
       @failed_count += count
+    end
+
+    # ─── Import-specific methods ──────────────────────────────────────────
+
+    def start_import(list_count, task_count)
+      @mode = :import
+      @start_time = Time.now
+      @import_list_count = list_count
+      @import_total = task_count
+      @imported_count = 0
+      @output.say "Importing #{task_count} tasks across #{list_count} lists...", :green
+    end
+
+    def importing_list(name, current, total)
+      @current_list = name
+      @list_stats[name] ||= { imported: 0, failed: 0 }
+      @output.say "  → #{name} (#{current}/#{total})" if @verbose
+    end
+
+    def imported_task(title, list_name)
+      @imported_count += 1
+      @list_stats[list_name] ||= { imported: 0, failed: 0 }
+      @list_stats[list_name][:imported] += 1
+      @output.say "    + #{title}" if @verbose
+    end
+
+    def failed_import(title, list_name, error)
+      @failed_count += 1
+      @list_stats[list_name][:failed] += 1 if list_name && @list_stats[list_name]
+      @output.say "    ✗ #{title}: #{error.message}", :red if @verbose
+    end
+
+    def print_import_summary
+      return unless @start_time
+
+      duration = format_duration(Time.now - @start_time)
+
+      @output.say "\n#{'━' * 50}"
+      @output.say 'Import Summary'
+      @output.say "#{'━' * 50}\n"
+      @output.say "Tasks imported:  #{@imported_count}", :green
+      @output.say "Failed:          #{@failed_count}", :red if @failed_count.positive?
+
+      if @list_stats.any?
+        @output.say "\nBreakdown by list:"
+        @list_stats.each do |list_name, stats|
+          count = stats[:imported] || 0
+          line = "  #{list_name}: #{count} imported"
+          line += ", #{stats[:failed]} failed" if stats[:failed]&.positive?
+          @output.say line
+        end
+      end
+
+      @output.say "\nDuration: #{duration}"
+      print_failure_warning
     end
 
     private

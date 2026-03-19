@@ -1,0 +1,90 @@
+# Example task import file for export-ms-todo
+# Run: bundle exec bin/export-ms-todo import --input examples/tasks_to_import.yml
+#
+# Each list will be created if it doesn't already exist.
+# Due dates are optional and use YYYY-MM-DD format.
+# Notes are optional free text.
+
+lists:
+  "Job Applications":
+    - title: "Apply — SEEK jobs (batch of ~15 roles)"
+      note: "SEEK job IDs: 90526414, 90532203, 90932309, 90831102, 90734005, 90584465, 90731811, 90745983, 90641639, 90401231, 90921759, 90932082, 90760083, 90891450, 90709374, 90881197, 90920272"
+    - title: "Apply — HESTA Integration Leads, Risk Program (12m max term)"
+      note: "https://peopleconnect.hesta.com.au/job/Melbourne-Integration-Leads-Risk-Program-12-month-Max-Term-Contracts-Multiple-Roles-VIC/1358599266/"
+    - title: "Apply — Landers role (check careers portal)"
+      note: "https://careers.landers.com.au"
+    - title: "Apply — Worldline role (check careers portal)"
+      note: "https://career2.successfactors.eu/ — Worldline ANZ"
+
+  "Wesfarmers Interview":
+    - title: "Accept MS Teams calendar invite for interview"
+      due: "2026-03-17"
+      note: "Interview: Mon 23 Mar, 1 PM AEDT with Elektra Woodrow (Head of Audit, Risk & Compliance)"
+    - title: "Download PD from email (WHPD Risk and Compliance Manager - Oct25.docx)"
+      due: "2026-03-17"
+    - title: "Download Candidate Guide - Competency Based Interview.pdf"
+      due: "2026-03-17"
+    - title: "Draft interview pack with Claude"
+      due: "2026-03-20"
+    - title: "Research Wesfarmers Health / API business"
+      due: "2026-03-21"
+    - title: "Prepare STAR examples for behavioural questions"
+      due: "2026-03-22"
+    - title: "Run mock interview practice"
+      due: "2026-03-22"
+
+  "Inbox & Messages":
+    - title: "Zero inbox (Gmail)"
+      due: "2026-03-18"
+    - title: "Respond — Will"
+    - title: "Respond — Doris"
+    - title: "Respond — Gemma"
+    - title: "Respond — Elliot"
+    - title: "Respond — Meegs"
+    - title: "Respond — Jess"
+    - title: "Respond — Leigh"
+    - title: "Message Ed De Breen about run club"
+      note: "Not urgent — next few weeks"
+
+  "Nicky — Bookings Chat":
+    - title: "Email Nicky — request EAP details"
+      due: "2026-03-17"
+    - title: "Chat with Nicky — book Dr re Prozac, Diazepam, non-stimulant ADHD meds"
+    - title: "Chat with Nicky — book EAP sessions (grief support)"
+    - title: "Chat with Nicky — book GP blood test (TSH + hormones post-pregnancy)"
+    - title: "Chat with Nicky — book GP for DNA-based coeliac disease test"
+
+  "Marketplace & Misc":
+    - title: "List IKEA king mattress topper on FB Marketplace"
+      note: "A$220 — ad copy drafted"
+
+  "RPL — Swinburne BBus":
+    # Phase 1 — Information gathering
+    - title: "Request academic transcript from Swinburne Online (student ID 9882545)"
+      note: "Contact studentservices@swinburneonline.edu.au"
+    - title: "Confirm current enrolment status — active, lapsed, or deferred"
+    - title: "Review Swinburne RPL guidelines PDF"
+      note: "https://www.swinburne.edu.au/media/swinburneeduau/current-students/docs/pdf/HE-RPL-Student-Guidelines.pdf"
+    - title: "Review Swinburne credit/RPL page"
+      note: "https://www.swinburne.edu.au/courses/enrolling/credit-for-prior-study-experience/"
+    - title: "Check June 2024 Swinburne enquiry — did they respond? (search iCloud email)"
+    # Phase 2 — Contact Swinburne
+    - title: "Contact Swinburne Online re: re-enrolment pathway and transcript"
+      note: "studentservices@swinburneonline.edu.au"
+    - title: "Contact Swinburne on-campus studentHQ re: transferring from Online"
+      note: "askgeorge@swin.edu.au | +61 3 9214 8000"
+    - title: "Ask: materials needed for re-enrolment?"
+    - title: "Ask: can RPL be assessed at re-enrolment or must I enrol first?"
+    - title: "Ask: are cross-faculty electives (engineering/AI) available in BBus?"
+    - title: "Confirm 10-year currency rule for 2018 units"
+    # Phase 3 — Gap analysis
+    - title: "Map completed units against current BBus course structure"
+    - title: "Identify units eligible for RPL based on professional experience"
+    - title: "Build RPL Portfolio of Prior Learning (resume, work samples, certs, PD)"
+    - title: "Calculate remaining units and timeline scenarios"
+    - title: "Select major (Management likely strongest fit)"
+    - title: "Select electives — AI, tech, mechatronics focus"
+    # Phase 4 — Application
+    - title: "Submit RPL application with Portfolio of Prior Learning"
+    - title: "Submit re-enrolment / new application"
+    - title: "Enrol in first unit for next available teaching period"

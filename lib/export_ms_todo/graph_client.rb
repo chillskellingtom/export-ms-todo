@@ -18,13 +18,22 @@ module ExportMsTodo
     end
 
     def get(path)
-      get_with_retry(path)
+      request_with_retry(:get, path)
+    end
+
+    def post(path, body: {})
+      request_with_retry(:post, path, body: body)
     end
 
     private
 
-    def get_with_retry(path, retries = MAX_RETRIES)
-      response = self.class.get(path, headers: @headers)
+    def request_with_retry(method, path, retries = MAX_RETRIES, body: nil)
+      response = if method == :post
+                   self.class.post(path, headers: @headers.merge('Content-Type' => 'application/json'),
+                                         body: body.to_json)
+                 else
+                   self.class.get(path, headers: @headers)
+                 end
 
       case response.code
       when 200..299
@@ -37,13 +46,13 @@ module ExportMsTodo
 
         warn "Rate limit exceeded. Waiting #{retry_after} seconds..."
         sleep(retry_after)
-        get_with_retry(path, retries - 1)
+        request_with_retry(method, path, retries - 1, body: body)
 
       when 500..599
         raise Error, "Server error: #{response.code}" unless retries.positive?
 
         sleep(2**(MAX_RETRIES - retries)) # Exponential backoff
-        get_with_retry(path, retries - 1)
+        request_with_retry(method, path, retries - 1, body: body)
 
       else
         raise Error, "Unexpected response: #{response.code}"
