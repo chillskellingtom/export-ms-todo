@@ -3,7 +3,7 @@
 # Gemfile
 source 'https://rubygems.org'
 
-ruby '~> 3.4'
+ruby '>= 3.4'
 
 gem 'dotenv', '~> 3.0'
 gem 'httparty', '~> 0.21'
